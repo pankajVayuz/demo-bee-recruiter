@@ -5,6 +5,9 @@ import {
   EMPLOYER_FORGOT_PASSWORD_VERIFY_NUMBER_OTP_REQUEST,
   EMPLOYER_FORGOT_PASSWORD_VERIFY_NUMBER_OTP_REQUEST_FAIL,
   EMPLOYER_FORGOT_PASSWORD_VERIFY_NUMBER_OTP_REQUEST_SUCCESS,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST_FAIL,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST_SUCCESS,
   EMPLOYER_IN_DASHBOARD,
   EMPLOYER_LOADING,
   EMPLOYER_LOGIN_ERROR,
@@ -31,8 +34,8 @@ const initalState = {
   loading:false,
   userInfo: {
     otp: null,
-    phone:employer?.body?.user_contact,
-    email:employer?.data?.email,
+    phone:employer?.body?.user_contact || null,
+    email:employer?.data?.email|| null,
     resendOtp:false,
     signupOtpSend:false,
     token: employer?.token || null,
@@ -96,8 +99,8 @@ const reducer = (state = initalState, action) => {
         userInfo:{
           ...state.userInfo,
           otp:payload.otp,
-          email:employer.body.email,
-          phone:employer.body.user_contact
+          email:payload?.body.email,
+          phone:payload?.body.user_contact
         }
        
       };
@@ -236,6 +239,31 @@ const reducer = (state = initalState, action) => {
                   loading:false,
                   error:payload
                 }
+
+                case EMPLOYER_FORGOT_RESEND_OTP_REQUEST:
+                  return{
+                    ...state,
+                    loading:true,
+                    error:null
+                  }
+                  case EMPLOYER_FORGOT_RESEND_OTP_REQUEST_SUCCESS:
+                    return{
+                      ...state,
+                      loading:false,
+                      error:null,
+                      success:payload.message,
+                      userInfo:{
+                        ...state.userInfo,
+                        otp:payload.otp,
+                        resendOtp:true
+                      }
+                    }
+                    case EMPLOYER_FORGOT_RESEND_OTP_REQUEST_FAIL:
+                      return{
+                        ...state,
+                        loading:false,
+                        error:payload
+                      }
      
 
     default:

@@ -20,6 +20,9 @@ import {
   EMPLOYER_RESEND_OTP_REQUEST,
   EMPLOYER_RESEND_OTP_REQUEST_SUCCESS,
   EMPLOYER_RESEND_OTP_REQUEST_FAIL,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST_SUCCESS,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST_FAIL,
+  EMPLOYER_FORGOT_RESEND_OTP_REQUEST,
 } from "../../constant/employerConstant";
 import { apiService } from "../../services/apiService";
 import { resolver } from "../../services/network";
@@ -230,6 +233,30 @@ const employerVerifyOtpResend = (body) => async (dispatch) => {
   }
 };
 
+const employerForgotOtpResend = (body) => async (dispatch) => {
+  dispatch({ type:EMPLOYER_FORGOT_RESEND_OTP_REQUEST});
+  const resolveData = await resolver(
+    ` 
+  ${apiService.employerForgotOtpResend}
+  `,
+    "post",
+    body,
+    authHeader()
+  );
+  if (resolveData?.data && resolveData?.data?.status == "200") {
+   
+    dispatch({
+      type:EMPLOYER_FORGOT_RESEND_OTP_REQUEST_SUCCESS,
+      payload: resolveData?.data?.data,
+    });
+  } else {
+    dispatch({
+      type: EMPLOYER_FORGOT_RESEND_OTP_REQUEST_FAIL,
+      payload: resolveData?.error?.response?.statusText,
+    });
+   
+  }
+};
 
 
 
@@ -239,5 +266,5 @@ export {
   employerSignup,
   signupVerifyNumber,
   employerForgotPasswordVerifyNumber,
-  employerCreateNewPassword,employerVerifyOtpResend
+  employerCreateNewPassword,employerVerifyOtpResend,employerForgotOtpResend
 };

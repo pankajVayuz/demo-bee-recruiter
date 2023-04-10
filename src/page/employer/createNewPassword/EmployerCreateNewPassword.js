@@ -23,6 +23,7 @@ const EmployerCreateNewPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {loading,error,userInfo,success}= useSelector((state)=>state.employerAuth)
+  const employer = localStorage.getItem("employer");
 
 
  

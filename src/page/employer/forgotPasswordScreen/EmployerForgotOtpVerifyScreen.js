@@ -7,9 +7,7 @@ import logo from "../../../image/logo.svg";
 
 import OTPInput, { ResendOTP } from "otp-input-react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  employerForgotPasswordVerifyNumber
-} from "../../../actions/employer/employer";
+import { employerForgotOtpResend, employerForgotPasswordVerifyNumber, employerVerifyOtpResend } from "../../../actions/employer/employer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,7 +16,7 @@ const EmployerForgotOtpVerifyScreen = () => {
   const [OTP, setOTP] = useState("");
   const [valid, setValid] = useState(true);
   const dispatch = useDispatch();
-  const {  loading, error,userInfo,success } = useSelector(
+  const { loading, error, userInfo, success } = useSelector(
     (state) => state.employerAuth
   );
   const navigate = useNavigate();
@@ -44,15 +42,32 @@ const EmployerForgotOtpVerifyScreen = () => {
   }, [error]);
 
   useEffect(() => {
-    if (success=="OTP Verified Successfully.") {
-
-      toast(success, { type: "success" });
-
-        navigate("/employer/newpassword")
+    if (success) {
+      toast(success, { type: "info" });
     }
   }, [success]);
 
-  useEffect(() => {}, []);
+
+  useEffect(() => {
+    if (success == "OTP Verified Successfully.") {
+      toast(success, { type: "success" });
+
+      navigate("/employer/newpassword");
+    }
+  }, [success]);
+
+
+
+
+  const resendOtp = () => {
+    if (userNumber && !userInfo?.otp) {
+      isNaN(userNumber)
+        ? dispatch(employerForgotOtpResend(resendOtpBodyData))
+        : dispatch(employerVerifyOtpResend({ otpfor: "verify_number" }));
+    }
+    setOTP("");
+  };
+
 
   const formData1 = { type: "contact", email: userNumber, otp: +OTP };
   const formData2 = {
@@ -60,8 +75,13 @@ const EmployerForgotOtpVerifyScreen = () => {
     email: userNumber,
     otp: +OTP,
   };
- 
-  console.log("user number",userNumber)
+  const resendOtpBodyData = {
+    type:"email",
+    otpfor:"forgotpassword",
+    email:userNumber
+  }
+
+  console.log("user number",resendOtpBodyData);
 
   const handelSubmit = () => {
     if (userNumber) {
@@ -69,11 +89,12 @@ const EmployerForgotOtpVerifyScreen = () => {
         ? dispatch(employerForgotPasswordVerifyNumber(formData2))
         : dispatch(employerForgotPasswordVerifyNumber(formData1));
     }
-    setOTP("")
-    
+    setOTP("");
 
     // );
   };
+
+ 
 
   return (
     <>
@@ -140,7 +161,7 @@ const EmployerForgotOtpVerifyScreen = () => {
                 <span className="text-[8px] text-[#7E7E7E] sm:text-[12px] md:text-[16px]">
                   Didn’t receive a code?
                   <span className="text-[#F78500] cursor-pointer">
-                    Resend SMS
+                    <ResendOTP onResendClick={resendOtp} />
                   </span>
                 </span>
               </div>
